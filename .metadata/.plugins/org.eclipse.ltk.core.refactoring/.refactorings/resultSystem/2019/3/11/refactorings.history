@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="Rename type &apos;org.unical.resultProcessor.dao.userRepo&apos; to &apos;UserRepo&apos;&#x0D;&#x0A;- Original project: &apos;resultSystem&apos;&#x0D;&#x0A;- Original element: &apos;org.unical.resultProcessor.dao.userRepo&apos;&#x0D;&#x0A;- Renamed element: &apos;org.unical.resultProcessor.dao.UserRepo&apos;&#x0D;&#x0A;- Update references to refactored element&#x0D;&#x0A;- Update textual occurrences in comments and strings" description="Rename type &apos;userRepo&apos;" flags="589830" id="org.eclipse.jdt.ui.rename.type" input="/src\/main\/java&lt;org.unical.resultProcessor.dao{userRepo.java[userRepo" matchStrategy="1" name="UserRepo" qualified="false" references="true" similarDeclarations="false" stamp="1552316408263" textual="false" version="1.0"/>
+</session>

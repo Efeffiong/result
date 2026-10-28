@@ -1,0 +1,77 @@
+package org.unical.resultProcessor.controllers;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.SessionAttribute;
+import org.unical.resultProcessor.dao.CourseRepo;
+import org.unical.resultProcessor.dao.ResultRepo;
+import org.unical.resultProcessor.dao.StudentRepository;
+import org.unical.resultProcessor.model.Course;
+import org.unical.resultProcessor.model.Result;
+import org.unical.resultProcessor.model.Unit;
+import org.unical.resultProcessor.model.User;
+
+@Controller
+public class resultController {
+	
+	@Autowired
+	CourseRepo courseRepo;
+	
+	@Autowired
+	ResultRepo resultRepo;
+	
+	@Autowired
+	StudentRepository studentRepo;
+	
+	@GetMapping("/resultForm")
+	public String addResult(@SessionAttribute("userInfo") User userInfo, Course course, Result result, HttpServletRequest request) {
+		String department = userInfo.getPosition();
+		String courseSession = userInfo.getSession();
+		request.setAttribute("courses", courseRepo.findByDepartmentAndCourseSession(department, courseSession));
+		request.setAttribute("students", studentRepo.findByDepartmentAndSession(department, courseSession));
+		return "add-result";
+	}
+	
+	
+	@PostMapping("/addResult")
+	public String newUser(@SessionAttribute("userInfo") User userInfo, @Valid Result result, BindingResult rs, Model model) {
+		String dept = userInfo.getPosition();
+		result.setUnit(dept);
+		resultRepo.save(result);
+		model.addAttribute("results", result);
+		return "result-List";
+	}
+	
+	@GetMapping("/editResult/{resultId}")
+	public String showUpdatForm(@PathVariable("resultId") Integer resultId, Model model) {
+		Result result = resultRepo.findById(resultId)
+				.orElseThrow(()-> new IllegalArgumentException("invalid id:" + resultId));
+		model.addAttribute("result", result);
+		return "update-Result";
+	}
+	
+	@PostMapping("/updateResult/{resultId}")
+	public String updateResult(@PathVariable("resultId") Integer resultId, @Valid Result result, BindingResult rs, Model model) {		
+		result.setResultId(resultId);
+		resultRepo.save(result);
+		model.addAttribute("results", result);
+		return "results";
+	}
+	
+	@GetMapping("/deleteResult/{resultId}")
+	public String deleteResult(@PathVariable("resultId") Integer resultId, Model model) {
+		Result result = resultRepo.findById(resultId)
+				.orElseThrow(()-> new IllegalArgumentException("invalid id:" + resultId));
+		resultRepo.delete(result);
+		model.addAttribute("results", resultRepo.findAll());
+		return "results";
+	}
+}

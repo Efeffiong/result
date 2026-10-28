@@ -1,0 +1,6 @@
+INDEX VERSION 1.4+C:\Users\COMPAQ\Desktop\tasks\.metadata\.plugins\org.eclipse.wst.jsdt.core\indexes
+338906334.index
+1533121346.index
+1419926326.index
+322557472.index
+538346753.index

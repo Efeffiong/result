@@ -1,0 +1,200 @@
+<!DOCTYPE	html> 
+
+<html xmlns:th="http://www.thymeleaf.org">		
+<head>				
+	<meta	charset="utf-8">				
+	<meta	http-equiv="X-UA-Compatible"	content="IE=edge">				
+	<meta	name="viewport"	content="width=device-width,	initial-scale=1">				
+	<title>Hello	World!</title>
+				<link	rel="stylesheet"	href="css/bootstrap.css">
+				<link	rel="stylesheet"	href="css/bootstrap.min.css">
+				<link	rel="stylesheet"	href="css/bootstrap-grid.css">
+				<link	rel="stylesheet"	href="css/bootstrap-grid.min.css">
+				<link	rel="stylesheet"	href="css/bootstrap-reboot.min.css">
+				<link	rel="stylesheet"	href="css/bootstrap-reboot.css">
+				<!--[if	lt	IE	9]>						
+				<script	src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"> </script>						
+				<script	src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"> </script>				
+				<![endif]-->	
+				
+				<style>
+					.coloring span  {
+						color:red;
+					}
+				</style>	
+</head>		
+<body>
+	<nav class="navbar navbar-default">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <a class="navbar-brand" href="/">
+      	<div class="row">
+			<div class="col-md-3">
+				<img alt="Brand" src="/images/unical5.png" class="img-responsive">
+			</div>
+			<div class="col-md-9">
+				<div class="row ">
+					<h1>University of Calabar, Calabar</h1>
+				</div>
+				<div class="row">
+					<h5>Results Processing System</h5>
+				</div>
+			</div>
+       </div>
+      </a>
+    </div>
+  </div>
+</nav>
+		<div class="container">
+			<div class="row text-center">
+				<div class="col-md-3 btn btn-danger">
+					<a href="/">Home</a>
+				</div>
+				<div class="col-md-3 btn btn-danger">
+					<a href="signup">Registration</a>
+				</div>
+				<div class="col-md-3 btn btn-danger">
+					<a href="#">User Guide</a>
+				</div>
+				<div class="col-md-3 btn btn-danger">
+					<a href="#">About</a>
+				</div>
+			</div>
+		
+	</div>
+	
+			<div class="container">
+		<h1>Manage Courses</h1>
+		
+		<form action="#" th:action="@{/courseForm}" th:object="${Course}" method="POST" 
+		class="form-horizontal coloring">
+		
+			<input type="hidden" name="id" value="${course.courseId}"/>
+			
+			<div class="form-group">
+				<div class="col-md-5">
+					<input type="text" placeholder="Course Title" id="" class="form-control" th:field="*{courseTitle}"/>
+					<span th:if="${#fields.hasErrors('courseTitle')}" th:errors="*{courseTitle}"></span>
+				</div>
+			</div>
+			
+			<div class="form-group">
+				
+				<div class="col-md-5">
+					<input type="text" placeholder="Course Code" id="courseCode" class="form-control" name="courseCode" th:field="*{courseCode}"/>
+					<span th:if="${#fields.hasErrors('courseCode')}" th:errors="*{courseCode}"></span>
+				</div>
+			</div>
+			
+			<div class="form-group">
+				<div class="col-md-5">
+					<select name="semester">
+						<option disabled="disabled">Select semester ...</option>
+						<option value="first">First Semester</option>
+						<option value="second">Second Semester</option>
+					</select>
+				</div>
+			</div>
+			<div class="form-group">
+				
+				<div class="col-md-5">
+					<select name="level">
+						<option disabled="disabled">Select Level ...</option>
+						<option value="500">500 Level</option>
+						<option value="600">600 Level</option>
+						<option value="700">700 Level</option>
+						<option value="800">800 Level</option>
+						<option value="900">900 Level</option>
+					</select>
+					</div>
+			</div>
+			<div class="form-group">
+				
+				<div class="col-md-5">
+					<select name="creditUnit">
+						<option disabled="disabled">Select Credit Unit ...</option>
+						<option value="0">0</option>
+						<option value="1">2</option>
+						<option value="2">3</option>
+						<option value="3">4</option>
+						<option value="4">5</option>
+						<option value="5">6</option>
+						<option value="6">7</option>
+						<option value="7">8</option>
+						<option value="8">9</option>
+						<option value="10">10</option>
+					</select>
+					</div>
+			</div>
+			<div class="form-group">
+				<div class="col-md-5">
+					<input type="text" placeholder="Course Session" id="courseSession" class="form-control" name="courseSession" th:field="*{courseSession}"/>
+					<span th:if="${#fields.hasErrors('courseSession')}" th:errors="*{courseSession}"></span>
+				</div>
+			</div>
+			<div class="form-group">
+				<div class="col-md-5">
+					<select name="courseType">
+						<option disabled="disabled">Select Course Type ...</option>
+						<option value="PGD">PGD</option>
+						<option value="MSc">MSc</option>
+						<option value="PhD">PhD</option>
+					</select>
+				</div>
+			</div>
+			<div class="form-group">
+				<div class="col-md-5">
+					<select name="department">
+						<option disabled="disabled">Select your department</option>
+						<option th:each="unit : ${units}" 
+							th:value="${unit.unitDept}" 
+							th:text="${unit.unitDept}">	
+						</option>
+					</select>
+				</div>
+			</div>
+			<div class="form-group">
+				<input type="submit" class="btn btn-primary" value="Add Unit"/>
+			</div>
+		</form>
+		</div>
+			
+	
+	<div class="container">
+      <footer class="jumbotron my-5 pt-5 text-muted text-center text-small">
+        <p class="mb-1">&copy; 2017-2018 Company Name</p>
+        <ul class="list-inline">
+          <li class="list-inline-item"><a href="#">Privacy</a></li>
+          <li class="list-inline-item"><a href="#">Terms</a></li>
+          <li class="list-inline-item"><a href="#">Support</a></li>
+        </ul>
+      </footer></div>
+    
+	<script	src="js/jquery-3.3.1.js"></script>
+	<script>window.jQuery || document.write('<script src="js/jquery-3.3.1.js"><\/script>')</script>				
+	<script	src="js/bootstrap.js"></script>
+	<script src="js/bootstrap.min.js"></script>	
+	<script>
+      // Example starter JavaScript for disabling form submissions if there are invalid fields
+      (function() {
+        'use strict';
+
+        window.addEventListener('load', function() {
+          // Fetch all the forms we want to apply custom Bootstrap validation styles to
+          var forms = document.getElementsByClassName('needs-validation');
+
+          // Loop over them and prevent submission
+          var validation = Array.prototype.filter.call(forms, function(form) {
+            form.addEventListener('submit', function(event) {
+              if (form.checkValidity() === false) {
+                event.preventDefault();
+                event.stopPropagation();
+              }
+              form.classList.add('was-validated');
+            }, false);
+          });
+        }, false);
+      })();
+    </script>	
+</body> 
+</html>

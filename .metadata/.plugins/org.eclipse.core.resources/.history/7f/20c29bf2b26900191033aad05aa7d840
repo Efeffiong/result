@@ -1,0 +1,75 @@
+package org.unical.resultProcessor.controllers;
+
+import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.SessionAttribute;
+import org.unical.resultProcessor.dao.ClassesRepo;
+import org.unical.resultProcessor.dao.CourseRepo;
+import org.unical.resultProcessor.dao.GradeRepo;
+import org.unical.resultProcessor.dao.ResultRepo;
+import org.unical.resultProcessor.dao.StudentRepository;
+import org.unical.resultProcessor.model.Course;
+import org.unical.resultProcessor.model.Grade;
+import org.unical.resultProcessor.model.Result;
+import org.unical.resultProcessor.model.Student;
+import org.unical.resultProcessor.model.User;
+
+@Controller
+public class resultGeneratorController {
+
+	@Autowired
+	CourseRepo courseRepo;
+	
+	@Autowired
+	StudentRepository studentRepo;
+	
+	@Autowired
+	ResultRepo resultRepo;
+	
+	@Autowired
+	GradeRepo gradeRepo;
+	
+	@Autowired
+	ClassesRepo classesRepo;
+	
+	@GetMapping("/resultGenerator")
+	public String resultGenerator(@SessionAttribute("userInfo") User userInfo, HttpServletRequest request) {
+		String dept = userInfo.getPosition();
+		String session = userInfo.getSession();
+		String courseType = "PGD";
+		String semester = "first";
+		String courseAllocation = "core";
+		
+		double gpa = 0.0;
+		double sumCreditUnit = 0.0;
+		
+		
+		
+		List<Student> PGDStudents = studentRepo.findByDepartmentAndSessionAndCourseType(dept, session, courseType);
+		for (Student student : PGDStudents) {
+			
+			List<Course> firstCoreCourses = courseRepo.findByDepartmentAndCourseSessionAndSemesterAndCourseAllocation(dept, session, semester, courseAllocation);
+			for (Course course : firstCoreCourses) {
+				
+				List<Result> results = resultRepo.findByCourseIdAndMatricNoAndUnit(course.getCourseId(), student.getMatricNo(), dept);
+				for (Result result : results) {
+					
+					double addScores = result.getAsses() + result.getExam();
+					Grade grades = (Grade) gradeRepo.findAll();
+					
+					if(grades.getMinScore() <= addScores && grades.getMaxScore() >= addScores) {
+						double gradePoint = grades.get
+					}
+				}
+			}
+		}
+		
+		
+		return "viewResults";
+	}
+}

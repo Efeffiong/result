@@ -1,0 +1,33 @@
+package org.unical.resultProcessor.controllers;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.SessionAttribute;
+import org.unical.resultProcessor.dao.CourseRepo;
+import org.unical.resultProcessor.dao.ResultRepo;
+import org.unical.resultProcessor.dao.StudentRepository;
+import org.unical.resultProcessor.model.User;
+
+@Controller
+public class resultGeneratorController {
+
+	@Autowired
+	CourseRepo courseRepo;
+	
+	@Autowired
+	StudentRepository studentRepository;
+	
+	@Autowired
+	ResultRepo resultRepo;
+	
+	@GetMapping("/resultGenerator")
+	public String resultGenerator(@SessionAttribute("userInfo") User userInfo, HttpServletRequest request) {
+		String dept = userInfo.getPosition();
+		String courseSession = userInfo.getSession();
+		
+		return "viewResults";
+	}
+}

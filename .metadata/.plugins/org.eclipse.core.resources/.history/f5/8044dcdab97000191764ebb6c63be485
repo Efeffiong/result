@@ -1,0 +1,57 @@
+package org.unical.resultProcessor.services;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.transaction.Transactional;
+
+import org.apache.jasper.tagplugins.jstl.core.ForEach;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.unical.resultProcessor.dao.CourseRepo;
+import org.unical.resultProcessor.dao.ResultRepo;
+import org.unical.resultProcessor.dao.SettingRepo;
+import org.unical.resultProcessor.model.Course;
+import org.unical.resultProcessor.model.Result;
+import org.unical.resultProcessor.model.ResultsDisplayer;
+import org.unical.resultProcessor.model.Setting;
+
+@Service
+@Transactional
+public class ResultsGenerator {
+
+	@Autowired
+	CourseRepo courseRepo;
+	
+	@Autowired
+	ResultRepo resultRepo;
+	
+	
+	private List<ResultsDisplayer> resultsProvider(String dept, String session, 
+			String pgCourseType, String firstSemester, String coreCourseAllocation){
+		
+		return null;
+	}
+	
+	private List<Course> electiveCourses(int noOfElectiveCourses, String matricNo, String semester, String session, String dept){
+		String courseAllocation = "elective";
+		int courseCounter = 0;
+		List<Course> collectiveElectiveCourses = new ArrayList<>();
+		
+		List<Course> regElectiveCourses = courseRepo.findByDepartmentAndCourseSessionAndSemesterAndCourseAllocation(dept, session, semester, courseAllocation);
+		for(Course regElectiveCourse : regElectiveCourses) {
+			
+			List<Result> electiveResults = resultRepo.findByCourseIdAndMatricNoAndUnit(regElectiveCourse.getCourseId(), matricNo, dept);
+			
+			while(courseCounter < noOfElectiveCourses) {
+				for(Result result : electiveResults) {
+					if(result != null) {
+						collectiveElectiveCourses.add(regElectiveCourse);
+					}
+				}
+				
+			}
+		}
+		return null;
+	}
+}

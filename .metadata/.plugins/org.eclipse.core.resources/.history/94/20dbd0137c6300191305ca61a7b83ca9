@@ -1,0 +1,22 @@
+package org.unical.resultProcessor.controllers;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.unical.resultProcessor.dao.CourseRepo;
+import org.unical.resultProcessor.dao.ResultRepo;
+import org.unical.resultProcessor.dao.StudentRepository;
+
+@Controller
+public class resultGeneratorController {
+
+	@Autowired
+	CourseRepo courseRepo;
+	
+	@Autowired
+	StudentRepository studentRepository;
+	
+	@Autowired
+	ResultRepo resultRepo;
+	
+	
+}

@@ -1,0 +1,71 @@
+package org.unical.resultProcessor.model;
+
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.validation.constraints.NotBlank;
+
+@Entity
+public class Result {
+
+	@Id
+	@GeneratedValue(strategy=GenerationType.AUTO)
+	private int resultId;
+	
+	@NotBlank(message="continous assessment score is mandatory")
+	private double asses;
+	
+	@NotBlank(message="Examination score is mandatory")
+	private double exam;
+	
+	private int courseId;
+	
+	private int unitId;
+	
+	public Result() {}
+	
+	public Result(double asses, double exam, int courseId, int unitId) {
+		super();
+		this.asses = asses;
+		this.exam = exam;
+		this.courseId = courseId;
+		this.unitId = unitId;
+	}
+	public int getResultId() {
+		return resultId;
+	}
+	public void setResultId(int resultId) {
+		this.resultId = resultId;
+	}
+	public double getAsses() {
+		return asses;
+	}
+	public void setAsses(double asses) {
+		this.asses = asses;
+	}
+	public double getExam() {
+		return exam;
+	}
+	public void setExam(double exam) {
+		this.exam = exam;
+	}
+	public int getCourseId() {
+		return courseId;
+	}
+	public void setCourseId(int courseId) {
+		this.courseId = courseId;
+	}
+	public int getUnitId() {
+		return unitId;
+	}
+	public void setUnitId(int unitId) {
+		this.unitId = unitId;
+	}
+	@Override
+	public String toString() {
+		return "result [resultId=" + resultId + ", asses=" + asses + ", exam=" + exam + ", courseId=" + courseId
+				+ ", unitId=" + unitId + "]";
+	}
+
+}

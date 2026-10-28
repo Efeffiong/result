@@ -1,0 +1,5 @@
+package org.unical.resultProcessor.controllers;
+
+public class resultGeneratorController {
+
+}

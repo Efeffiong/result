@@ -1,0 +1,72 @@
+package org.unical.resultProcessor.services;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.unical.resultProcessor.dao.CourseRepo;
+import org.unical.resultProcessor.dao.ResultRepo;
+import org.unical.resultProcessor.model.Course;
+import org.unical.resultProcessor.model.Result;
+
+@Service
+public class ResultsGenerator {
+
+	@Autowired
+	CourseRepo courseRepo;
+	
+	@Autowired
+	ResultRepo resultRepo;
+	
+	private int courseCounter = 0;
+	
+	public List<Course> electiveCourses(int noOfElectiveCourses, String matricNo, String semester, String session, String dept){
+		String courseAllocation = "elective";
+		
+		List<Course> collectiveElectiveCourses = new ArrayList<>();
+		
+		
+		List<Course> regElectiveCourses = courseRepo.findByDepartmentAndCourseSessionAndSemesterAndCourseAllocation(dept, session, semester, courseAllocation);
+		for(Course regElectiveCourse : regElectiveCourses) {
+			System.out.print("elective courses");
+			System.out.println(regElectiveCourse);
+			
+			List<Result> electiveResults = resultRepo.findByCourseIdAndMatricNoAndUnit(regElectiveCourse.getCourseId(), matricNo, dept);
+			
+			while(courseCounter < noOfElectiveCourses) {
+				for(Result result : electiveResults) {
+					System.out.print("electiveResults");
+					System.out.println(electiveResults);
+					if(result != null) {
+						collectiveElectiveCourses.add(regElectiveCourse);
+						System.out.println(collectiveElectiveCourses);
+						courseCounter += 1;
+						System.out.println(courseCounter);
+					}
+				}
+				
+			}
+		}
+		if(courseCounter == noOfElectiveCourses) {
+			System.out.println("courseCounter == noOfElectiveCourses");
+			return collectiveElectiveCourses;
+		} else{
+			for(Course regElectiveCourse : regElectiveCourses) {
+			
+				for(Course addElectiveCourse : collectiveElectiveCourses) {
+					while(courseCounter < noOfElectiveCourses) {
+						if(regElectiveCourse != addElectiveCourse) {
+							System.out.println(regElectiveCourse);
+							System.out.println(addElectiveCourse);
+							collectiveElectiveCourses.add(regElectiveCourse);
+						}
+					}
+				}
+			}
+			
+			return collectiveElectiveCourses;
+			
+		}
+	}
+}

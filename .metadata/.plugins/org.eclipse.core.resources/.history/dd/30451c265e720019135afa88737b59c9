@@ -1,0 +1,156 @@
+package org.unical.resultProcessor.controllers;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.SessionAttribute;
+import org.unical.resultProcessor.dao.ClassesRepo;
+import org.unical.resultProcessor.dao.CourseRepo;
+import org.unical.resultProcessor.dao.GradeRepo;
+import org.unical.resultProcessor.dao.ResultRepo;
+import org.unical.resultProcessor.dao.SettingRepo;
+import org.unical.resultProcessor.dao.StudentRepository;
+import org.unical.resultProcessor.model.Course;
+import org.unical.resultProcessor.model.Grade;
+import org.unical.resultProcessor.model.Result;
+import org.unical.resultProcessor.model.ResultsDisplayer;
+import org.unical.resultProcessor.model.Setting;
+import org.unical.resultProcessor.model.Student;
+import org.unical.resultProcessor.model.User;
+import org.unical.resultProcessor.services.ResultsGenerator;
+
+@Controller
+public class resultGeneratorController {
+
+	@Autowired
+	CourseRepo courseRepo;
+	
+	@Autowired
+	StudentRepository studentRepo;
+	
+	@Autowired
+	ResultRepo resultRepo;
+	
+	@Autowired
+	GradeRepo gradeRepo;
+	
+	@Autowired
+	ClassesRepo classesRepo;
+	
+	@Autowired
+	SettingRepo settingRepo;
+	
+	@Autowired
+	ResultsGenerator resultsGenerator;
+
+	@GetMapping("/resultGenerator")
+	public String resultGenerator(@SessionAttribute("userInfo") User userInfo, HttpServletRequest request) {
+		String dept = userInfo.getPosition();
+		String session = userInfo.getSession();
+		String pgdCourseType = "PGD";
+		String firstSemester = "first";
+		String coreCourseAllocation = "core";
+		
+		String mscCourseType = "Msc";
+		String secondSemester = "second";
+		
+		String phdCourseType = "phd";
+		
+		List<ResultsDisplayer> displayAll = new ArrayList<>();
+		
+		double firstPgdGpa = 0.0;
+		double firstPgdSumCreditUnit = 0.0;
+		///////////////////////////////////////////////////////////////////
+		
+		List<Setting> settings = (List<Setting>) settingRepo.findAll();
+		int noOfFirstElectiveCourses = 0;
+		int noOfSecondElectiveCourses = 0;
+		for(Setting setting : settings) {
+			noOfFirstElectiveCourses = setting.getNoOfFirstElectiveCourses();
+			noOfSecondElectiveCourses = setting.getNoOfSecondElectiveCourses();
+		}
+		/////////////////////////////////////////////////////////////////////
+		List<Student> PGDStudents = studentRepo.findByDepartmentAndSessionAndCourseType(dept, session, pgdCourseType);
+		for (Student student : PGDStudents) {		
+			List<Course> firstCoreCourses = courseRepo.findByDepartmentAndCourseSessionAndSemesterAndCourseAllocation(dept, session, firstSemester, coreCourseAllocation);
+			List<Course> firstElectiveCourses = resultsGenerator.electiveCourses(noOfFirstElectiveCourses, student.getMatricNo(), firstSemester, session, dept);
+			firstCoreCourses.addAll(firstElectiveCourses);
+			for (Course course : firstCoreCourses) {
+				List<Result> firstCoreResults = resultRepo.findByCourseIdAndMatricNoAndUnit(course.getCourseId(), student.getMatricNo(), dept);
+				for (Result result : firstCoreResults) {
+					double addScores = 0.0;
+					if(result != null) {
+						addScores = result.getAsses() + result.getExam();
+					}else {
+						addScores = 0.0;
+					}
+					List<Grade> grades = (List<Grade>) gradeRepo.findAll();
+					String graded = "null";
+					for (Grade grade : grades) {
+						if((addScores >= grade.getMinScore()) && (addScores <= grade.getMaxScore())) {
+							graded = grade.getGrade();
+							double gradePoint = grade.getGradePoint();
+							double multiplier = gradePoint * course.getCreditUnit();
+							firstPgdSumCreditUnit += course.getCreditUnit();
+							firstPgdGpa += multiplier;
+						} else if (graded == "null") {
+							double gradePoint = 0.0;
+							double multiplier = gradePoint * course.getCreditUnit();
+							firstPgdSumCreditUnit += course.getCreditUnit();
+							firstPgdGpa += multiplier;
+						}
+					}
+				}
+			}
+			///////////////////////////////////////////////////////////////////////
+			///second semester pgd
+			////////////////////////////////////////////////////
+			
+			double secondPgdSumCreditUnit = 0.0;
+			double secondPgdGpa = 0.0;
+			
+			List<Course> secondCoreCourses = courseRepo.findByDepartmentAndCourseSessionAndSemesterAndCourseAllocation(dept, session, secondSemester, coreCourseAllocation);
+			List<Course> secondElectiveCourses = resultsGenerator.electiveCourses(noOfSecondElectiveCourses, student.getMatricNo(), secondSemester, session, dept);
+			secondCoreCourses.addAll(secondElectiveCourses);
+			for (Course secondCourse : secondCoreCourses) {
+				List<Result> secondCoreResults = resultRepo.findByCourseIdAndMatricNoAndUnit(secondCourse.getCourseId(), student.getMatricNo(), dept);
+				for (Result secondResult : secondCoreResults) {
+					double addScores = 0.0;
+					if(secondResult != null) {
+						addScores = secondResult.getAsses() + secondResult.getExam();
+					}else {
+						addScores = 0.0;
+					}
+					List<Grade> grades = (List<Grade>) gradeRepo.findAll();
+					String graded = "null";
+					for (Grade grade : grades) {
+						if((addScores >= grade.getMinScore()) && (addScores <= grade.getMaxScore())) {
+							graded = grade.getGrade();
+							double gradePoint = grade.getGradePoint();
+							double multiplier = gradePoint * secondCourse.getCreditUnit();
+							secondPgdSumCreditUnit += secondCourse.getCreditUnit();
+							secondPgdGpa += multiplier;
+						} else if (graded == "null") {
+							double gradePoint = 0.0;
+							double multiplier = gradePoint * secondCourse.getCreditUnit();
+							secondPgdSumCreditUnit += secondCourse.getCreditUnit();
+							secondPgdGpa += multiplier;
+						}
+					}
+				}
+			}
+			//////////////////////////////////////////////////////
+			double firstGpa = firstPgdGpa/firstPgdSumCreditUnit;
+			double secondGpa = secondPgdGpa/secondPgdSumCreditUnit;
+			displayAll.add(new ResultsDisplayer(student.getSurname(), student.getFirstname(), student.getMiddlename(), student.getMatricNo(),firstGpa,secondGpa,0,0,""));
+		}
+		
+		request.setAttribute("results", displayAll);
+		return "viewResults";
+	}
+}
